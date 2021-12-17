@@ -1,4 +1,4 @@
-# 分布式基础知识
+# CAP
 
 CAP 原则又称 CAP 定理，指的是在一个分布式系统中，一致性（Consistency）、可用性（Availability）、分区容错性（Partition tolerance）。 CAP 原则指的是，这三个要素最多只能同时实现两点，不可能三者兼顾。
 
@@ -46,4 +46,4 @@ The system continues to operate despite arbitrary message loss or failure of par
 
 --------------
 
-其中 P 是分布式的基本要求，强调 CP 的有 Redis、HBase、ZooKeeper 等，无论是像 Redis、HBase 这种分布式存储系统，还是像 Zookeeper 这种分布式协调组件。数据的一致性是他们最最基本的要求。一个连数据一致性都保证不了的分布式存储要他有何用？
+其中 P 是分布式的基本要求，强调 CP 的有 Redis、HBase、ZooKeeper 等，无论是像 Redis、HBase 这种分布式存储系统，还是像 Zookeeper（Eureka 保证的是 AP） 这种分布式协调组件。数据的一致性是他们最最基本的要求。一个连数据一致性都保证不了的分布式存储要他有何用？舍弃 C 的 AP，从而保证高可用性，但这里舍弃的 C 并不是完全不要一致性，退而求其次保证最终一致性（银行这类对数据一致性要求严格的还是需要保证强一致性）。
