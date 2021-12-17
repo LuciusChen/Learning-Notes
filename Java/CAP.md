@@ -1,10 +1,11 @@
+## CAP
 CAP 原则又称 CAP 定理，指的是在一个分布式系统中，一致性（Consistency）、可用性（Availability）、分区容错性（Partition tolerance）。 CAP 原则指的是，这三个要素最多只能同时实现两点，不可能三者兼顾。
 
-## Consistency
+### Consistency
 
 All nodes see the same data at the same time.
 
-### 三种一致性策略
+#### 三种一致性策略
 
 对于关系型数据库，要求更新过的数据能被后续的访问都能看到，这是强一致性。
 
@@ -14,7 +15,7 @@ All nodes see the same data at the same time.
 
 CAP 中说，不可能同时满足的这个一致性指的是强一致性。
 
-## Availability
+### Availability
 
 Reads and writes always succeed.
 
@@ -32,7 +33,7 @@ Reads and writes always succeed.
 
 好的可用性主要是指系统能够很好的为用户服务，不出现用户操作失败或者访问超时等用户体验不好的情况。一个分布式系统，上下游设计很多系统如负载均衡、WEB服务器、应用代码、数据库服务器等，任何一个节点的不稳定都可以影响可用性。
 
-## Partition tolerance
+### Partition tolerance
 
 The system continues to operate despite arbitrary message loss or failure of part of the system.
 
@@ -42,6 +43,34 @@ The system continues to operate despite arbitrary message loss or failure of par
 
 简单点说，就是在网络中断，消息丢失的情况下，系统如果还能正常工作，就是有比较好的分区容错性。
 
---------------
+其中 P 是分布式的基本要求，强调 CP 的有 Redis、HBase、ZooKeeper 等，无论是像 Redis、HBase 这种分布式存储系统，还是像 Zookeeper（Eureka 保证的是 AP） 这种分布式协调组件。数据的一致性是他们最最基本的要求。一个连数据一致性都保证不了的分布式存储要他有何用？舍弃 C 的 AP，从而保证高可用性，但这里舍弃的 C 并不是完全不要一致性，退而求其次保证最终一致性（银行这类对数据一致性要求严格的还是需要保证强一致性），也就是下面的 BASE 理论。
 
-其中 P 是分布式的基本要求，强调 CP 的有 Redis、HBase、ZooKeeper 等，无论是像 Redis、HBase 这种分布式存储系统，还是像 Zookeeper（Eureka 保证的是 AP） 这种分布式协调组件。数据的一致性是他们最最基本的要求。一个连数据一致性都保证不了的分布式存储要他有何用？舍弃 C 的 AP，从而保证高可用性，但这里舍弃的 C 并不是完全不要一致性，退而求其次保证最终一致性（银行这类对数据一致性要求严格的还是需要保证强一致性）。
+## BASE 理论
+
+BASE 是 Basically Available（基本可用） 、Soft-state（软状态） 和 Eventually Consistent（最终一致性） 三个短语的缩写。BASE 理论是对 CAP 中一致性 C 和可用性 A 权衡的结果，其来源于对大规模互联网系统分布式实践的总结，是基于 CAP 定理逐步演化而来的，它大大降低了我们对系统的要求。
+
+BASE理论的核心思想是：
+
+> 即使无法做到强一致性（Strong consistency），但每个应用都可以根据自身的业务特点，采用适当的方式来使系统达到最终一致性（Eventual consistency）。
+
+### BASE理论的三个特性
+
+### 基本可用
+
+什么是基本可用呢？
+
+假如系统出现了不可预知故障，允许损失部分可用性，当然也不能完全不可用。
+
+损失的这部分可用性指的是什么？
+
+- 响应时间上的损失：正常情况下的搜索引擎 0.5 秒即返回给用户结果，而基本可用的搜索引擎可以在 2 秒作用返回结果。
+
+- 功能上的损失：在一个电商网站上，正常情况下，用户可以顺利完成每一笔订单。但是到了大促期间，为了保护购物系统的稳定性，部分消费者可能会被引导到一个降级页面。
+
+### 软状态
+
+软状态指允许系统中的数据存在中间状态（CAP 理论中的数据不一致），并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同节点的数据副本之间进行数据同步的过程存在延时。
+
+### 最终一致性
+
+最终一致性强调的是系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致的状态。因此，最终一致性的本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性。
